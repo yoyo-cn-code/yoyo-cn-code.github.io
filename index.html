@@ -328,6 +328,106 @@
   <footer>
     © 2026 𝑴𝒚 𝑮𝒊𝒕𝒉𝒖𝒃.𝒊𝒐 | 𝘣𝘶𝘪𝘭𝘵 𝘣𝘺 𝘺𝘰𝘺𝘰
   </footer>
+  
+ <!-- 极简分享按钮 - 插入在 </body> 之前 -->
+<button class="share-minimal" onclick="nativeShare()" aria-label="分享">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="18" cy="5" r="3"></circle>
+    <circle cx="6" cy="12" r="3"></circle>
+    <circle cx="18" cy="19" r="3"></circle>
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+  </svg>
+</button>
+
+<div class="toast" id="toast">已复制</div>
+
+<style>
+  .share-minimal {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.3s ease;
+    z-index: 100;
+    line-height: 0;
+  }
+  
+  .share-minimal:hover {
+    color: #fff;
+    transform: scale(1.1);
+  }
+  
+  .share-minimal:active {
+    transform: scale(0.95);
+  }
+  
+  .share-minimal svg {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .toast {
+    position: fixed;
+    top: 4rem;
+    right: 1.5rem;
+    background: #1a1d25;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    border: 1px solid #333;
+  }
+  
+  .toast.show {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  async function nativeShare() {
+    const shareData = {
+      title: document.title,
+      url: window.location.href
+    };
+    
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(window.location.href);
+        showToast();
+      } else {
+        // 降级
+        const ta = document.createElement('textarea');
+        ta.value = window.location.href;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast();
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') showToast();
+    }
+  }
+  
+  function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1500);
+  }
+</script>
+
 
   <script>
     let isOpen = false;
